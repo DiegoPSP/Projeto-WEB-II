@@ -6,14 +6,6 @@ O sistema permite que usuários **Administradores** (`is_staff`) criem projetos,
 
 O projeto utiliza um tema escuro e é totalmente responsivo, graças ao **Bootstrap 5**, e implementa interatividade assíncrona com **HTMX** para inscrições.
 
-## 📸 Screenshots
-
-| Página Principal (Listagem) | Detalhes da Tarefa (com Imagem) |
-| :---: | :---: |
-| ![Placeholder da Página Principal](https://placehold.co/600x400/212529/dee2e6?text=Página+Principal) | ![Placeholder dos Detalhes da Tarefa](https://placehold.co/600x400/212529/dee2e6?text=Detalhes+da+Tarefa) |
-| **Painel Administrativo** | **Formulário de Edição** |
-| ![Placeholder do Painel Admin](https://placehold.co/600x400/212529/dee2e6?text=Painel+Admin) | ![Placeholder do Formulário de Edição](https://placehold.co/600x400/212529/dee2e6?text=Formulário+Editar) |
-
 ## ✨ Funcionalidades Principais
 
 Este projeto cumpre todos os requisitos obrigatórios da disciplina:
@@ -42,62 +34,19 @@ O projeto também implementa com sucesso os desafios opcionais:
 * **Banco de Dados:** SQLite 3 (padrão de desenvolvimento)
 * **Imagens:** Pillow (para `ImageField`)
 
-## 🗂️ Estrutura do Banco de Dados (Modelos)
+## 🗂️ Modelo Relacional (Estrutura do Banco)
 
-1.  **`Projeto`**: Agrupador principal de tarefas (Ex: "Website", "App Mobile").
-2.  **`Categoria`**: Tipo de tarefa (Ex: "Bug", "Design", "Documentação").
-3.  **`Tarefa`**: A tarefa em si. Relaciona-se com `Projeto`, `Categoria` e `User` (criador).
-4.  **`Inscricao`**: Tabela-pivô que liga um `User` (colaborador) a uma `Tarefa`.
-5.  **`Comentario`**: Permite que um `User` (autor) comente em uma `Tarefa`.
+O diagrama abaixo (renderizado pelo GitHub) representa as 5 classes customizadas (+ a classe `User` do Django) e suas inter-relações:
 
-## 🏁 Como Rodar o Projeto Localmente
+```mermaid
+erDiagram
+    User ||--o{ Projeto : "cria (criador)"
+    User ||--o{ Tarefa : "cria (criador)"
+    User ||--o{ Comentario : "escreve (autor)"
+    User ||--o{ Inscricao : "realiza (colaborador)"
 
-**Pré-requisitos:** Python 3.10+ e Git instalados.
+    Projeto }o--|| Tarefa : "contém (1-N)"
+    Categoria }o--|| Tarefa : "classifica (1-N)"
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone [https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git](https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git)
-    cd SEU_REPOSITORIO
-    ```
-
-2.  **Crie e ative um ambiente virtual:**
-    ```bash
-    # (Para Mac/Linux)
-    python3 -m venv venv
-    source venv/bin/activate
-    
-    # (Para Windows)
-    python -m venv venv
-    .\venv\Scripts\activate
-    ```
-
-3.  **Instale as dependências:**
-    (Este projeto requer Django e Pillow para o upload de imagens)
-    ```bash
-    pip install django pillow
-    ```
-
-4.  **Crie as migrações do banco de dados:**
-    ```bash
-    python manage.py makemigrations projeto_webII_app
-    python manage.py migrate
-    ```
-
-5.  **Crie um superusuário (Admin):**
-    ```bash
-    python manage.py createsuperuser
-    ```
-    (Siga as instruções para criar seu usuário `admin`)
-
-6.  **Rode o servidor:**
-    ```bash
-    python manage.py runserver
-    ```
-
-7.  **Acesse o site:**
-    Abra seu navegador e acesse `http://127.0.0.1:8000/`
-
-8.  **(IMPORTANTE) Crie os dados iniciais:**
-    * Acesse o painel de admin: `http://127.0.0.1:8000/admin/`
-    * Crie algumas **Categorias** (ex: "Bug", "Design") e **Projetos** (ex: "Site Principal").
-    * Agora, saia do admin e, logado como admin no site, vá em "Painel Admin" -> "Adicionar Nova" para criar sua primeira tarefa.
+    Tarefa ||--o{ Inscricao : "possui (1-N)"
+    Tarefa ||--o{ Comentario : "recebe (1-N)"
