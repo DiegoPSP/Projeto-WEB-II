@@ -3,250 +3,184 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Evento, Local, Palestrante, CategoriaEvento, Inscricao
-from .forms import FormularioEvento, FormularioLocal, FormularioPalestrante, FormularioCatEvento
+from django.contrib import messages  # Importado para feedback do usuário
+from .models import Tarefa, Inscricao  # Modelos atualizados
+from .forms import FormularioTarefa     # Formulário atualizado
 
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Conta criada com sucesso! Por favor, faça o login.')
             return redirect('login')
+        else:
+            messages.error(request, 'Houve um erro no registro. Verifique os dados.')
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
 
-def listarEventos(request):
-    lista_eventos = Evento.objects.all().order_by('-data_hora')
+# Renomeado de listarEventos para listarTarefas
+def listarTarefas(request):
+    # Filtra apenas tarefas com status 'aberta'
+    lista_tarefas = Tarefa.objects.filter(status='aberta').order_by('data_limite')
     
-    paginator = Paginator(lista_eventos, 5)
+    paginator = Paginator(lista_tarefas, 5)
     num_pagina = request.GET.get('page')
     obj_pagina = paginator.get_page(num_pagina)
     
-    return render(request, 'app/listarEventos.html', {'obj_pagina': obj_pagina})
+    # 🚨 ATENÇÃO: Renomeie seu template para 'app/listarTarefas.html'
+    return render(request, 'app/listarTarefas.html', {'obj_pagina': obj_pagina})
 
-def detalharEvento(request, id):
-    evento = get_object_or_404(Evento, pk=id)
+# Renomeado de detalharEvento para detalharTarefa
+def detalharTarefa(request, id):
+    tarefa = get_object_or_404(Tarefa, pk=id)
     inscrito = False
+    
+    # Pega a lista de usuários inscritos
+    colaboradores_inscritos = User.objects.filter(inscricoes__tarefa=tarefa)
+    
     if request.user.is_authenticated:
-        inscrito = Inscricao.objects.filter(participante=request.user, evento=evento).exists()
-    return render(request, 'app/detalharEvento.html', {'evento': evento, 'inscrito': inscrito})
+        # Atualiza a verificação com os nomes de campos corretos
+        inscrito = Inscricao.objects.filter(colaborador=request.user, tarefa=tarefa).exists()
+    
+    context = {
+        'tarefa': tarefa,
+        'inscrito': inscrito,
+        'colaboradores_inscritos': colaboradores_inscritos
+    }
+    # 🚨 ATENÇÃO: Renomeie seu template para 'app/detalharTarefa.html'
+    return render(request, 'app/detalharTarefa.html', context)
 
+# Renomeado de criarEvento para criarTarefa
 @login_required
-def criarEvento(request):
+def criarTarefa(request):
     if not request.user.is_staff:
-        return redirect('listarEventos')
+        messages.error(request, 'Você não tem permissão para criar tarefas.')
+        return redirect('listarTarefas')
 
     if request.method == 'POST':
-        form = FormularioEvento(request.POST, request.FILES)
+        form = FormularioTarefa(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('listarEventos')
+            tarefa = form.save(commit=False)
+            tarefa.criador = request.user  # Define o usuário logado como criador
+            tarefa.save()
+            messages.success(request, 'Tarefa criada com sucesso!')
+            return redirect('listarTarefas')
     else:
-        form = FormularioEvento()
-    return render(request, 'app/formularioEvento.html', {'form': form, 'tipo': 'Cadastrar Evento'})
+        form = FormularioTarefa()
+    
+    # 🚨 ATENÇÃO: Renomeie seu template para 'app/formularioTarefa.html'
+    return render(request, 'app/formularioTarefa.html', {'form': form, 'tipo': 'Cadastrar Tarefa'})
 
+# Renomeado de atualizarEvento para atualizarTarefa
 @login_required
-def atualizarEvento(request, id):
+def atualizarTarefa(request, id):
     if not request.user.is_staff:
-        return redirect('listarEventos')
+        messages.error(request, 'Você não tem permissão para editar tarefas.')
+        return redirect('listarTarefas')
 
-    evento = get_object_or_404(Evento, pk=id)
-    form = FormularioEvento(request.POST or None, request.FILES or None, instance=evento)
+    tarefa = get_object_or_404(Tarefa, pk=id)
+    form = FormularioTarefa(request.POST or None, request.FILES or None, instance=tarefa)
     
     if form.is_valid():
         form.save()
-        return redirect('listarEventos')
+        messages.success(request, 'Tarefa atualizada com sucesso.')
+        return redirect('listarTarefas')
         
-    return render(request, 'app/formularioEvento.html', {'form': form, 'tipo': 'Editar Evento'})
+    # 🚨 ATENÇÃO: Renomeie seu template para 'app/formularioTarefa.html'
+    return render(request, 'app/formularioTarefa.html', {'form': form, 'tipo': 'Editar Tarefa'})
 
+# Renomeado de apagarEvento para apagarTarefa
 @login_required
-def apagarEvento(request, id):
+def apagarTarefa(request, id):
     if not request.user.is_staff:
-        return redirect('listarEventos')
+        messages.error(request, 'Você não tem permissão para apagar tarefas.')
+        return redirect('listarTarefas')
     
-    evento = get_object_or_404(Evento, pk=id)
+    tarefa = get_object_or_404(Tarefa, pk=id)
     if request.method == 'POST':
-        evento.delete()
-        return redirect('listarEventos')
-    return render(request, 'app/apagarEvento.html', {'objeto': evento, 'tipo': 'Evento'})
-
-
-def listarLocais(request):
-    lista_locais = Local.objects.all().order_by('nome')
+        tarefa.delete()
+        messages.success(request, 'Tarefa apagada com sucesso.')
+        return redirect('listarTarefas')
     
-    paginator = Paginator(lista_locais, 5)
-    num_pagina = request.GET.get('page')
-    obj_pagina = paginator.get_page(num_pagina)
-    
-    return render(request, 'app/listarLocais.html', {'obj_pagina': obj_pagina})
+    # 🚨 ATENÇÃO: Renomeie seu template para 'app/apagarTarefa.html'
+    return render(request, 'app/apagarTarefa.html', {'objeto': tarefa, 'tipo': 'Tarefa'})
 
+
+# ❌ REMOVIDAS: Todas as views de Local, Palestrante, e CategoriaEvento
+
+# Renomeado de inscrever_evento para inscrever_tarefa
+# ... (o resto das suas views e imports permanece igual)
+# ...
+
+# Renomeado de inscrever_evento para inscrever_tarefa
 @login_required
-def criarLocal(request):
-    if not request.user.is_staff:
-        return redirect('listarEventos')
-    
-    if request.method == 'POST':
-        form = FormularioLocal(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('listarLocais')
-    else:
-        form = FormularioLocal()
-    return render(request, 'app/formularioGenerico.html', {'form': form, 'tipo': 'Cadastrar Local'})
+def inscrever_tarefa(request, id):
+    tarefa = get_object_or_404(Tarefa, pk=id)
 
-@login_required
-def atualizarLocal(request, id):
-    if not request.user.is_staff:
-        return redirect('listarEventos')
-    
-    local = get_object_or_404(Local, pk=id)
-    form = FormularioLocal(request.POST or None, instance=local)
-    
-    if form.is_valid():
-        form.save()
-        return redirect('listarLocais')
-        
-    return render(request, 'app/formularioGenerico.html', {'form': form, 'tipo': 'Editar Local'})
-
-@login_required
-def apagarLocal(request, id):
-    if not request.user.is_staff:
-        return redirect('listarEventos')
-    
-    local = get_object_or_404(Local, pk=id)
-    if request.method == 'POST':
-        local.delete()
-        return redirect('listarLocais')
-    return render(request, 'app/apagarGenerico.html', {'objeto': local, 'tipo': 'Local'})
-
-
-def listarPalestrantes(request):
-    lista_palestrantes = Palestrante.objects.all().order_by('nome')
-    
-    paginator = Paginator(lista_palestrantes, 5)
-    num_pagina = request.GET.get('page')
-    obj_pagina = paginator.get_page(num_pagina)
-    
-    return render(request, 'app/listarPalestrantes.html', {'obj_pagina': obj_pagina})
-
-@login_required
-def criarPalestrante(request):
-    if not request.user.is_staff:
-        return redirect('listarEventos')
-    
-    if request.method == 'POST':
-        form = FormularioPalestrante(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('listarPalestrantes')
-    else:
-        form = FormularioPalestrante()
-    return render(request, 'app/formularioGenerico.html', {'form': form, 'tipo': 'Cadastrar Palestrante'})
-
-@login_required
-def atualizarPalestrante(request, id):
-    if not request.user.is_staff:
-        return redirect('listarEventos')
-    
-    palestrante = get_object_or_404(Palestrante, pk=id)
-    form = FormularioPalestrante(request.POST or None, request.FILES or None, instance=palestrante)
-    
-    if form.is_valid():
-        form.save()
-        return redirect('listarPalestrantes')
-        
-    return render(request, 'app/formularioGenerico.html', {'form': form, 'tipo': 'Editar Palestrante'})
-
-@login_required
-def apagarPalestrante(request, id):
-    if not request.user.is_staff:
-        return redirect('listarEventos')
-    
-    palestrante = get_object_or_404(Palestrante, pk=id)
-    if request.method == 'POST':
-        palestrante.delete()
-        return redirect('listarPalestrantes')
-    return render(request, 'app/apagarGenerico.html', {'objeto': palestrante, 'tipo': 'Palestrante'})
-
-
-def listarCatEventos(request):
-    lista_categorias = CategoriaEvento.objects.all().order_by('nome')
-    
-    paginator = Paginator(lista_categorias, 5)
-    num_pagina = request.GET.get('page')
-    obj_pagina = paginator.get_page(num_pagina)
-    
-    return render(request, 'app/listarCatEventos.html', {'obj_pagina': obj_pagina})
-
-@login_required
-def criarCatEvento(request):
-    if not request.user.is_staff:
-        return redirect('listarEventos')
-    
-    if request.method == 'POST':
-        form = FormularioCatEvento(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('listarCatEventos')
-    else:
-        form = FormularioCatEvento()
-    return render(request, 'app/formularioGenerico.html', {'form': form, 'tipo': 'Cadastrar Categoria'})
-
-@login_required
-def atualizarCatEvento(request, id):
-    if not request.user.is_staff:
-        return redirect('listarEventos')
-    
-    categoria = get_object_or_404(CategoriaEvento, pk=id)
-    form = FormularioCatEvento(request.POST or None, instance=categoria)
-    
-    if form.is_valid():
-        form.save()
-        return redirect('listarCatEventos')
-        
-    return render(request, 'app/formularioGenerico.html', {'form': form, 'tipo': 'Editar Categoria'})
-
-@login_required
-def apagarCatEvento(request, id):
-    if not request.user.is_staff:
-        return redirect('listarEventos')
-    
-    categoria = get_object_or_404(CategoriaEvento, pk=id)
-    if request.method == 'POST':
-        categoria.delete()
-        return redirect('listarCatEventos')
-    return render(request, 'app/apagarGenerico.html', {'objeto': categoria, 'tipo': 'Categoria'})
-
-@login_required
-def inscrever_evento(request, id):
-    if request.method == 'POST':
-        evento = get_object_or_404(Evento, pk=id)
-        Inscricao.objects.get_or_create(
-            participante=request.user,
-            evento=evento
+    # Lógica de segurança: Apenas POST e apenas se a tarefa estiver aberta
+    if request.method == 'POST' and tarefa.status == 'aberta':
+        # get_or_create previne inscrições duplicadas
+        inscricao, created = Inscricao.objects.get_or_create(
+            colaborador=request.user,
+            tarefa=tarefa
         )
         
-        return render(request, 'app/partials/botao_inscrito.html')
+        # 🚨 MUDANÇA PRINCIPAL AQUI 🚨
+        # Em vez de um redirect, retornamos o template do "pedaço" de HTML.
+        # O HTMX vai receber isso e atualizar a página.
+        context = {'tarefa': tarefa} # Passa a tarefa, caso o partial precise
+        return render(request, 'app/partials/botao_inscrito.html', context)
     
-    return redirect('detalharEvento', id=id)
+    # Se a tarefa não estiver aberta ou não for POST,
+    # apenas renderiza o botão de "inscrito" (ou erro, se preferir)
+    # como uma salvaguarda.
+    return render(request, 'app/partials/botao_inscrito.html', {'tarefa': tarefa})
 
+
+# Dashboard atualizado
 @login_required
 def admin_dashboard(request):
     if not request.user.is_staff:
-        return redirect('listarEventos')
+        return redirect('listarTarefas')
 
-    num_eventos = Evento.objects.count()
-    num_locais = Local.objects.count()
-    num_palestrantes = Palestrante.objects.count()
+    num_tarefas = Tarefa.objects.count()
     num_usuarios = User.objects.count()
+    num_inscricoes = Inscricao.objects.count()
+    num_tarefas_abertas = Tarefa.objects.filter(status='aberta').count()
 
     context = {
-        'num_eventos': num_eventos,
-        'num_locais': num_locais,
-        'num_palestrantes': num_palestrantes,
-        'num_usuarios': num_usuarios
+        'num_tarefas': num_tarefas,
+        'num_usuarios': num_usuarios,
+        'num_inscricoes': num_inscricoes,
+        'num_tarefas_abertas': num_tarefas_abertas,
     }
     
     return render(request, 'app/admin_dashboard.html', context)
+
+# ... (todos os seus imports existentes)
+# ... (todas as suas views existentes)
+
+# 👇 FUNÇÃO ADICIONADA AQUI 👇
+
+@login_required
+def concluir_tarefa(request, id):
+    tarefa = get_object_or_404(Tarefa, pk=id)
+    
+    # Segurança: Verifica se o usuário logado está inscrito na tarefa
+    esta_inscrito = Inscricao.objects.filter(colaborador=request.user, tarefa=tarefa).exists()
+
+    # Apenas quem está inscrito e está fazendo um POST pode concluir
+    if request.method == 'POST' and esta_inscrito:
+        # Muda o status para 'concluida'
+        tarefa.status = 'concluida'
+        tarefa.save()
+        messages.success(request, f'Tarefa "{tarefa.titulo}" marcada como concluída!')
+    
+    elif not esta_inscrito:
+        messages.error(request, 'Você não está inscrito nesta tarefa.')
+
+    # Redireciona de volta para a página de detalhes
+    return redirect('detalharTarefa', id=id)

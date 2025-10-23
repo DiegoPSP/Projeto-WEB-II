@@ -1,27 +1,32 @@
 from django import forms
-from .models import Evento, Local, Palestrante, CategoriaEvento
+from .models import Tarefa # Importe também os outros modelos
 
-class FormularioEvento(forms.ModelForm):
+class FormularioTarefa(forms.ModelForm):
     class Meta:
-        model = Evento
-        fields = '__all__'
+        model = Tarefa
+        
+        # --- CAMPOS ADICIONADOS: 'projeto', 'categoria' ---
+        fields = ['titulo', 'descricao', 'data_limite', 'imagem', 'projeto', 'categoria'] 
+        
         widgets = {
-            'data_hora': forms.DateTimeInput(
-                attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
-            'palestrantes': forms.CheckboxSelectMultiple,
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'data_limite': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'imagem': forms.FileInput(attrs={'class': 'form-control'}),
+            
+            # --- WIDGETS ADICIONADOS ---
+            # (Usarão 'select' padrão, que o Bootstrap vai estilizar)
+            'projeto': forms.Select(attrs={'class': 'form-select'}),
+            'categoria': forms.Select(attrs={'class': 'form-select'}),
         }
+        
+    def __init__(self, *args, **kwargs):
+        super(FormularioTarefa, self).__init__(*args, **kwargs)
+        if self.instance and self.instance.data_limite:
+            self.initial['data_limite'] = self.instance.data_limite.strftime('%Y-%m-%dT%H:%M')
 
-class FormularioLocal(forms.ModelForm):
-    class Meta:
-        model = Local
-        fields = '__all__'
-
-class FormularioPalestrante(forms.ModelForm):
-    class Meta:
-        model = Palestrante
-        fields = '__all__'
-
-class FormularioCatEvento(forms.ModelForm):
-    class Meta:
-        model = CategoriaEvento
-        fields = '__all__'
+# (Você pode adicionar um ComentarioForm aqui depois, mas por enquanto, 
+#  o requisito de 5 classes já está cumprido e elas podem ser gerenciadas pelo Admin)

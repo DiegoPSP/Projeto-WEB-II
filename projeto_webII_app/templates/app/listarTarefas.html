@@ -1,0 +1,101 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0">Tarefas Abertas</h1>
+        {% if user.is_staff %}
+            <a href="{% url 'criarTarefa' %}" class="btn btn-success">
+                <i class="bi bi-plus-lg"></i> Nova Tarefa
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- 
+      Grid responsivo do Bootstrap. 
+      1 coluna em telas pequenas, 2 em médias, 3 em grandes.
+    -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for tarefa in obj_pagina %}
+            <div class="col">
+                <!-- Card do Bootstrap com altura 100% -->
+                <div class="card h-100 shadow-sm border-secondary">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ tarefa.titulo }}</h5>
+                        
+                        <ul class="list-unstyled text-muted small">
+                            <li>
+                                <i class="bi bi-calendar-event"></i> 
+                                <strong>Data Limite:</strong> {{ tarefa.data_limite|date:"d/m/Y H:i" }}
+                            </li>
+                            <li>
+                                <i class="bi bi-person"></i> 
+                                <strong>Criador:</strong> {{ tarefa.criador.username }}
+                            </li>
+                        </ul>
+                        
+                        <p class="card-text mt-2">
+                            <!-- Badge do Bootstrap para o Status -->
+                            <strong>Status:</strong> 
+                            <span class="badge rounded-pill bg-success-subtle text-success-emphasis">
+                                {{ tarefa.get_status_display }}
+                            </span>
+                        </p>
+                        
+                        <!-- Botão principal que estica (usa o <a> do card) -->
+                        <a href="{% url 'detalharTarefa' tarefa.id %}" class="stretched-link"></a>
+                    </div>
+                    
+                    {% if user.is_staff %}
+                        <div class="card-footer bg-dark-subtle d-flex justify-content-end gap-2">
+                            <a href="{% url 'atualizarTarefa' tarefa.id %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-pencil-fill"></i> Editar
+                            </a>
+                            <a href="{% url 'apagarTarefa' tarefa.id %}" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash-fill"></i> Apagar
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    Nenhuma tarefa aberta cadastrada no momento.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginação com Bootstrap -->
+    {% if obj_pagina.has_other_pages %}
+        <nav aria-label="Paginação" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if obj_pagina.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ obj_pagina.previous_page_number }}">Anterior</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Anterior</span>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">
+                        Página {{ obj_pagina.number }} de {{ obj_pagina.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if obj_pagina.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ obj_pagina.next_page_number }}">Próxima</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Próxima</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endblock %}

@@ -1,62 +1,77 @@
 {% extends 'app/base.html' %}
 
 {% block content %}
-    <h1 class="dashboard-title">Painel Administrativo</h1>
+    <h1 class="h2 mb-4">Painel Administrativo</h1>
 
-    <div class="stats-container">
-        <div class="stat-card">
-            <h2>{{ num_eventos }}</h2>
-            <p>Eventos Cadastrados</p>
+    <!-- Cards de Estatísticas -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
+        
+        <div class="col">
+            <div class="card text-center text-white bg-success shadow-sm h-100">
+                <div class="card-body">
+                    <h1 class="display-4">{{ num_tarefas }}</h1>
+                    <p class="card-title mb-0">Tarefas Cadastradas</p>
+                </div>
+            </div>
         </div>
-        <div class="stat-card">
-            <h2>{{ num_locais }}</h2>
-            <p>Locais</p>
+
+        <div class="col">
+            <div class="card text-center text-white bg-warning shadow-sm h-100">
+                <div class="card-body">
+                    <h1 class="display-4">{{ num_tarefas_abertas }}</h1>
+                    <p class="card-title mb-0">Tarefas Abertas</p>
+                </div>
+            </div>
         </div>
-        <div class="stat-card">
-            <h2>{{ num_palestrantes }}</h2>
-            <p>Palestrantes</p>
+
+        <div class="col">
+            <div class="card text-center text-white bg-info shadow-sm h-100">
+                <div class="card-body">
+                    <h1 class="display-4">{{ num_inscricoes }}</h1>
+                    <p class="card-title mb-0">Inscrições Totais</p>
+                </div>
+            </div>
         </div>
-        <div class="stat-card">
-            <h2>{{ num_usuarios }}</h2>
-            <p>Usuários Registrados</p>
+
+        <div class="col">
+            <div class="card text-center text-white bg-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <h1 class="display-4">{{ num_usuarios }}</h1>
+                    <p class="card-title mb-0">Usuários Registrados</p>
+                </div>
+            </div>
         </div>
+
     </div>
 
-    <div class="management-container">
-        <div class="card">
-            <h3>Gerenciar Eventos</h3>
-            <p>Adicione, edite ou remova eventos do sistema.</p>
-            <div class="actions">
-                <a href="{% url 'listarEventos' %}" class="btn-gerenciar">Ver Todos</a>
-                <a href="{% url 'criarEvento' %}" class="btn-novo-small">Adicionar Novo</a>
+    <!-- Cards de Gerenciamento -->
+    <h2 class="h4 mb-3">Gerenciamento</h2>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        
+        <div class="col">
+            <div class="card shadow-sm border-secondary h-100">
+                <div class="card-body">
+                    <h3 class="card-title h5"><i class="bi bi-list-task"></i> Gerenciar Tarefas</h3>
+                    <p class="card-text">Adicione, edite ou remova tarefas do sistema.</p>
+                </div>
+                <div class="card-footer bg-dark-subtle d-flex justify-content-end gap-2">
+                    <a href="{% url 'listarTarefas' %}" class="btn btn-outline-primary">Ver Todas</a>
+                    <a href="{% url 'criarTarefa' %}" class="btn btn-success">Adicionar Nova</a>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <h3>Gerenciar Locais</h3>
-            <p>Adicione, edite ou remova locais disponíveis.</p>
-            <div class="actions">
-                <a href="{% url 'listarLocais' %}" class="btn-gerenciar">Ver Todos</a>
-                <a href="{% url 'criarLocal' %}" class="btn-novo-small">Adicionar Novo</a>
+        <div class="col">
+            <div class="card shadow-sm border-secondary h-100">
+                <div class="card-body">
+                    <h3 class="card-title h5"><i class="bi bi-shield-lock-fill"></i> Admin Avançado</h3>
+                    <p class="card-text">Gerencie usuários, inscrições e status de tarefas no admin do Django.</p>
+                </div>
+                <div class="card-footer bg-dark-subtle d-flex justify-content-end">
+                    <a href="{% url 'admin:index' %}" class="btn btn-outline-secondary">Acessar Admin</a>
+                </div>
             </div>
         </div>
-
-        <div class="card">
-            <h3>Gerenciar Palestrantes</h3>
-            <p>Adicione, edite ou remova palestrantes.</p>
-            <div class="actions">
-                <a href="{% url 'listarPalestrantes' %}" class="btn-gerenciar">Ver Todos</a>
-                <a href="{% url 'criarPalestrante' %}" class="btn-novo-small">Adicionar Novo</a>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>Gerenciar Categorias</h3>
-            <p>Adicione, edite ou remova categorias de eventos.</p>
-            <div class="actions">
-                <a href="{% url 'listarCatEventos' %}" class="btn-gerenciar">Ver Todos</a>
-                <a href="{% url 'criarCatEvento' %}" class="btn-novo-small">Adicionar Novo</a>
-            </div>
-        </div>
+        
     </div>
 {% endblock %}

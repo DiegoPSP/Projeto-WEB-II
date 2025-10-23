@@ -2,30 +2,26 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
+    <div class="col-md-8">
         <div class="card shadow-sm border-secondary">
             <div class="card-body p-4 p-md-5">
-                <h2 class="card-title text-center mb-4">Criar nova conta</h2>
+                <!-- 'tipo' vem da view: 'Cadastrar Tarefa' ou 'Editar Tarefa' -->
+                <h2 class="card-title text-center mb-4">{{ tipo }}</h2>
                 
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     
-                    <!-- 
-                      Looping manual sobre o formulário para aplicar classes do Bootstrap.
-                    -->
+                    <!-- Loop manual para aplicar classes do Bootstrap -->
                     {% for field in form %}
                         <div class="mb-3">
                             <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                            <!-- 
-                              A classe 'form-control' é aplicada. 
-                              Adicionamos 'bg-dark text-white' para o tema escuro.
-                            -->
-                            <input type="{{ field.field.widget.input_type }}" 
-                                   name="{{ field.name }}" 
-                                   id="{{ field.id_for_label }}" 
-                                   class="form-control form-control-lg bg-dark text-white" 
-                                   {% if field.field.required %}required{% endif %}>
                             
+                            <!-- 
+                              Renderiza o widget (que já tem a classe 'form-control' 
+                              vinda do forms.py) 
+                            -->
+                            {{ field }}
+
                             {% if field.help_text %}
                                 <div class="form-text">{{ field.help_text|safe }}</div>
                             {% endif %}
@@ -39,7 +35,7 @@
                     {% endfor %}
                     
                     <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-success btn-lg">Criar conta</button>
+                        <button type="submit" class="btn btn-success btn-lg">Salvar</button>
                     </div>
                 </form>
             </div>

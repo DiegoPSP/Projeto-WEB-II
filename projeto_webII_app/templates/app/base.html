@@ -1,48 +1,87 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
+<html lang="pt-br" data-bs-theme="dark"> <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Eventos</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Gestão de Tarefas</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
-<body>
-    <header class="navbar">
+<body class="bg-body-tertiary">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a href="{% url 'listarEventos' %}" class="logo">Eventos<span>.</span>com</a>
-            <nav>
-                <ul>
-                    <li><a href="{% url 'listarEventos' %}">Eventos</a></li>
-                    <li><a href="{% url 'listarLocais' %}">Locais</a></li>
-                    <li><a href="{% url 'listarPalestrantes' %}">Palestrantes</a></li>
-                    <li><a href="{% url 'listarCatEventos' %}">Categorias</a></li>
-                    {% if user.is_authenticated %}
-                        {% if user.is_staff %}
-                            <li><a href="{% url 'admin_dashboard' %}">Painel Admin</a></li>
-                        {% endif %}
-                        <li>
-                            <form method="post" action="{% url 'logout' %}" id="logout-form">
-                                {% csrf_token %}
-                                <button type="submit" class="logout-button">Sair ({{ user.username }})</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li><a href="{% url 'login' %}">Login</a></li>
+            <a class="navbar-brand" href="{% url 'listarTarefas' %}">
+                <i class="bi bi-list-task"></i> Tarefas.com
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'listarTarefas' %}">Tarefas Abertas</a>
+                    </li>
+                    {% if user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_dashboard' %}">Painel Admin</a>
+                    </li>
                     {% endif %}
                 </ul>
-            </nav>
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-fill"></i> Olá, {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}" id="logout-form" class="m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="bi bi-box-arrow-right"></i> Sair
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a href="{% url 'login' %}" class="btn btn-outline-success">
+                                <i class="bi bi-box-arrow-in-right"></i> Entrar
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="container">
+    <main class="container my-4">
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="footer">
-        <p>&copy; 2025 - Projeto Web II - desenvolvido por SVNS</p>
+    <footer class="footer mt-auto py-3 bg-dark text-white-50">
+        <div class="container text-center">
+            <p class="m-0">&copy; 2025 - Projeto Web II - Gestão de Tarefas</p>
+        </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

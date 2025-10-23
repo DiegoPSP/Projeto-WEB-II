@@ -1,15 +1,25 @@
 {% extends 'app/base.html' %}
 
 {% block content %}
+    <!-- A variável 'tipo' é passada pela view: 'Cadastrar Tarefa' ou 'Editar Tarefa' -->
     <h1>{{ tipo }}</h1>
     
-    {% if 'Palestrante' in tipo %}
-        <form method="post" enctype="multipart/form-data" class="form-styled">
-    {% else %}
-        <form method="post" class="form-styled">
-    {% endif %}
+    <!-- 
+      Este é o formulário para criar/editar uma Tarefa. 
+      
+      NOTA: Se no futuro você adicionar um campo de imagem ao modelo 'Tarefa' 
+      (como um 'banner_tarefa'), você precisará adicionar 'enctype="multipart/form-data"'
+      a esta tag <form>, assim como você tinha no formulário antigo do Palestrante.
+    -->
+    <form method="post" class="form-styled">
         {% csrf_token %}
+        
+        <!-- 
+          'form.as_p' renderiza os campos do 'FormularioTarefa' 
+          (titulo, descricao, data_limite) que definimos em forms.py.
+        -->
         {{ form.as_p }}
+        
         <button type="submit">Salvar</button>
     </form>
 {% endblock %}
