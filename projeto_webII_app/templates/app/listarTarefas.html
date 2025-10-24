@@ -9,15 +9,9 @@
             </a>
         {% endif %}
     </div>
-
-    <!-- 
-      Grid responsivo do Bootstrap. 
-      1 coluna em telas pequenas, 2 em médias, 3 em grandes.
-    -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for tarefa in obj_pagina %}
             <div class="col">
-                <!-- Card do Bootstrap com altura 100% -->
                 <div class="card h-100 shadow-sm border-secondary">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ tarefa.titulo }}</h5>
@@ -34,14 +28,12 @@
                         </ul>
                         
                         <p class="card-text mt-2">
-                            <!-- Badge do Bootstrap para o Status -->
                             <strong>Status:</strong> 
                             <span class="badge rounded-pill bg-success-subtle text-success-emphasis">
                                 {{ tarefa.get_status_display }}
                             </span>
                         </p>
                         
-                        <!-- Botão principal que estica (usa o <a> do card) -->
                         <a href="{% url 'detalharTarefa' tarefa.id %}" class="stretched-link"></a>
                     </div>
                     
@@ -66,7 +58,6 @@
         {% endfor %}
     </div>
 
-    <!-- Paginação com Bootstrap -->
     {% if obj_pagina.has_other_pages %}
         <nav aria-label="Paginação" class="mt-4">
             <ul class="pagination justify-content-center">

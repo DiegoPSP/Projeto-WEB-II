@@ -6,14 +6,12 @@
         <div class="card shadow-sm border-secondary">
             <div class="card-body p-4 p-md-5">
 
-                <!-- Imagem (se existir) -->
                 {% if tarefa.imagem %}
                     <img src="{{ tarefa.imagem.url }}" alt="Imagem da Tarefa: {{ tarefa.titulo }}" class="img-fluid rounded mb-4 shadow-lg" style="width: 100%; max-height: 400px; object-fit: cover;">
                 {% endif %}
 
                 <h1 class="display-5 mb-3">{{ tarefa.titulo }}</h1>
 
-                <!-- Bloco de Informações -->
                 <ul class="list-group list-group-flush list-group-horizontal-md mb-4 text-center text-md-start">
                     <li class="list-group-item bg-transparent text-white-50 border-bottom-0 border-secondary px-0 px-md-3">
                         <i class="bi bi-calendar-event text-success"></i> 
@@ -41,13 +39,11 @@
                     </li>
                 </ul>
 
-                <!-- Descrição -->
                 <h2 class="h4">Descrição da Tarefa</h2>
                 <p class="lead">{{ tarefa.descricao|linebreaks }}</p>
 
                 <hr class="my-4 border-secondary">
 
-                <!-- Colaboradores -->
                 <h2 class="h4">Colaboradores Inscritos ({{ colaboradores_inscritos.count }})</h2>
                 {% if colaboradores_inscritos %}
                     <div class="d-flex flex-wrap gap-2">
@@ -63,11 +59,9 @@
 
                 <hr class="my-4 border-secondary">
                 
-                <!-- Seção de Ações (Inscrever-se / Concluir) -->
                 <div class="text-center">
                     {% if user.is_authenticated %}
                         
-                        <!-- Botão de Inscrição HTMX -->
                         <div id="botao-container" class="mb-3">
                             {% if inscrito %}
                                 {% include 'app/partials/botao_inscrito.html' %}
@@ -83,7 +77,6 @@
                             {% endif %}
                         </div>
 
-                        <!-- Botão de Conclusão -->
                         {% if inscrito %}
                         <div class="task-completion">
                             {% if tarefa.status == 'concluida' %}
@@ -108,10 +101,6 @@
 
             </div>
 
-            <!-- 
-              👇 NOVO BLOCO DE AÇÕES DO ADMIN ADICIONADO AQUI 👇
-              Este footer só aparece se o usuário for staff.
-            -->
             {% if user.is_staff %}
             <div class="card-footer bg-dark-subtle d-flex justify-content-end gap-2">
                 <a href="{% url 'atualizarTarefa' tarefa.id %}" class="btn btn-outline-primary">

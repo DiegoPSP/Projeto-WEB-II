@@ -1,77 +1,78 @@
 {% extends 'app/base.html' %}
 
 {% block content %}
-    <h1 class="h2 mb-4">Painel Administrativo</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5 mb-0">Painel Administrativo</h1>
+</div>
 
-    <!-- Cards de Estatísticas -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
-        
-        <div class="col">
-            <div class="card text-center text-white bg-success shadow-sm h-100">
-                <div class="card-body">
-                    <h1 class="display-4">{{ num_tarefas }}</h1>
-                    <p class="card-title mb-0">Tarefas Cadastradas</p>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
+
+    <div class="col">
+        <a href="{% url 'listar_tarefas_todas' %}" class="text-decoration-none">
+            <div class="card text-white bg-success shadow h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-list-task fs-1"></i>
+                    <h2 class="display-4 fw-bold my-2">{{ num_tarefas }}</h2>
+                    <p class="card-text fs-5">Tarefas Cadastradas</p>
                 </div>
             </div>
-        </div>
-
-        <div class="col">
-            <div class="card text-center text-white bg-warning shadow-sm h-100">
-                <div class="card-body">
-                    <h1 class="display-4">{{ num_tarefas_abertas }}</h1>
-                    <p class="card-title mb-0">Tarefas Abertas</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card text-center text-white bg-info shadow-sm h-100">
-                <div class="card-body">
-                    <h1 class="display-4">{{ num_inscricoes }}</h1>
-                    <p class="card-title mb-0">Inscrições Totais</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card text-center text-white bg-secondary shadow-sm h-100">
-                <div class="card-body">
-                    <h1 class="display-4">{{ num_usuarios }}</h1>
-                    <p class="card-title mb-0">Usuários Registrados</p>
-                </div>
-            </div>
-        </div>
-
+        </a>
     </div>
 
-    <!-- Cards de Gerenciamento -->
-    <h2 class="h4 mb-3">Gerenciamento</h2>
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-        
-        <div class="col">
-            <div class="card shadow-sm border-secondary h-100">
-                <div class="card-body">
-                    <h3 class="card-title h5"><i class="bi bi-list-task"></i> Gerenciar Tarefas</h3>
-                    <p class="card-text">Adicione, edite ou remova tarefas do sistema.</p>
-                </div>
-                <div class="card-footer bg-dark-subtle d-flex justify-content-end gap-2">
-                    <a href="{% url 'listarTarefas' %}" class="btn btn-outline-primary">Ver Todas</a>
-                    <a href="{% url 'criarTarefa' %}" class="btn btn-success">Adicionar Nova</a>
+    <div class="col">
+        <a href="{% url 'listarTarefas' %}" class="text-decoration-none">
+            <div class="card text-white bg-warning shadow h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-hourglass-split fs-1"></i>
+                    <h2 class="display-4 fw-bold my-2">{{ num_tarefas_abertas }}</h2>
+                    <p class="card-text fs-5">Tarefas Abertas</p>
                 </div>
             </div>
-        </div>
-
-        <div class="col">
-            <div class="card shadow-sm border-secondary h-100">
-                <div class="card-body">
-                    <h3 class="card-title h5"><i class="bi bi-shield-lock-fill"></i> Admin Avançado</h3>
-                    <p class="card-text">Gerencie usuários, inscrições e status de tarefas no admin do Django.</p>
-                </div>
-                <div class="card-footer bg-dark-subtle d-flex justify-content-end">
-                    <a href="{% url 'admin:index' %}" class="btn btn-outline-secondary">Acessar Admin</a>
-                </div>
-            </div>
-        </div>
-        
+        </a>
     </div>
+
+    <div class="col">
+        <div class="card text-white bg-info shadow h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle-fill fs-1"></i>
+                <h2 class="display-4 fw-bold my-2">{{ num_inscricoes }}</h2>
+                <p class="card-text fs-5">Inscrições Totais</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <a href="{% url 'listar_usuarios' %}" class="text-decoration-none">
+            <div class="card text-white bg-secondary shadow h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill fs-1"></i>
+                    <h2 class="display-4 fw-bold my-2">{{ num_usuarios }}</h2>
+                    <p class="card-text fs-5">Usuários Registrados</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+
+<h2 class="h4">Gerenciamento</h2>
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col">
+        <div class="card shadow-sm h-100 border-secondary">
+            <div class="card-body">
+                <h3 class="card-title h5"><i class="bi bi-list-task"></i> Gerenciar Tarefas</h3>
+                <p class="card-text text-white-50">Adicione, edite ou remova tarefas do sistema.</p>
+            </div>
+            <div class="card-footer bg-transparent border-top-secondary text-end">
+                <a href="{% url 'listar_tarefas_todas' %}" class="btn btn-sm btn-outline-light">Ver Todas</a>
+                <a href="{% url 'criarTarefa' %}" class="btn btn-sm btn-success">
+                    <i class="bi bi-plus-lg"></i> Adicionar Nova
+                </a>
+            </div>
+        </div>
+    </div>
+    
+</div>
 {% endblock %}
+

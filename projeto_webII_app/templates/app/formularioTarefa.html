@@ -5,21 +5,14 @@
     <div class="col-md-8">
         <div class="card shadow-sm border-secondary">
             <div class="card-body p-4 p-md-5">
-                <!-- 'tipo' vem da view: 'Cadastrar Tarefa' ou 'Editar Tarefa' -->
                 <h2 class="card-title text-center mb-4">{{ tipo }}</h2>
                 
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     
-                    <!-- Loop manual para aplicar classes do Bootstrap -->
                     {% for field in form %}
                         <div class="mb-3">
                             <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                            
-                            <!-- 
-                              Renderiza o widget (que já tem a classe 'form-control' 
-                              vinda do forms.py) 
-                            -->
                             {{ field }}
 
                             {% if field.help_text %}

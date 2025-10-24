@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import Tarefa, Inscricao, Projeto, Categoria, Comentario
 
-# --- REGISTRANDO NOVOS MODELOS ---
 @admin.register(Projeto)
 class ProjetoAdmin(admin.ModelAdmin):
     list_display = ('nome', 'criador', 'data_criacao')
@@ -20,16 +19,14 @@ class ComentarioAdmin(admin.ModelAdmin):
     autocomplete_fields = ('tarefa', 'autor')
 
 
-# --- ATUALIZANDO TAREFA ADMIN ---
 @admin.register(Tarefa)
 class TarefaAdmin(admin.ModelAdmin):
-    # Adicionando 'projeto' e 'categoria'
     list_display = ('titulo', 'projeto', 'categoria', 'criador', 'data_limite', 'status')
     list_filter = ('status', 'projeto', 'categoria', 'data_limite', 'criador')
     search_fields = ('titulo', 'descricao')
-    list_editable = ('status', 'categoria') # Permite editar status e categoria direto na lista
+    list_editable = ('status', 'categoria') 
     date_hierarchy = 'data_limite'
-    autocomplete_fields = ('criador', 'projeto', 'categoria') # Facilita a busca
+    autocomplete_fields = ('criador', 'projeto', 'categoria') 
 
 @admin.register(Inscricao)
 class InscricaoAdmin(admin.ModelAdmin):
